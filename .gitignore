@@ -1,0 +1,11 @@
+nexy.aes
+
+bots/index.txt
+bots/list.txt
+
+bots/slackbot-frd.log
+bots/bp-slackbot.log
+bp-slackbot.log
+*.pid
+**/*.sqlite3
+cron_bots/hn_news.txt

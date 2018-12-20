@@ -1,0 +1,34 @@
+# .bashrc
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# Source bash_completion if it exists
+[ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
+
+
+# Make it so Ctrl+S does nothing if we're in an interactive shell
+# See http://serverfault.com/questions/146745/how-can-i-check-in-bash-if-a-shell-is-running-in-interactive-mode
+# and http://tldp.org/LDP/abs/html/intandnonint.html
+
+if [ -n "$PS1" ]; then
+    stty -ixon
+fi
+
+# redefine PS1 to give a green user prompt
+# change the 32m to 31m to get a red prompt (useful if you're root)
+colorRed=31
+colorGreen=32
+colorBlue=34
+colorPurple=35
+if [ "$(id -u)" == "0" ]; then
+    color="$colorRed"   # red for root
+    isRoot=1
+else
+    color="$colorGreen"   # green for normal user
+    isRoot=0
+fi
+# we don't want to fork a new process with every enter press, so do math to color based on exit status. Normal prompt color for success, Yellow for fail (that's what's in the $(( ))
+PS1="\[\033[0;$((color+0))m\][\u@\h \W]\[\033[0m\]\[\033[0;\$(($color+((\$?>0))+\$((\$isRoot*(\$((\$?>0))*1)))))m\]\\$ \[\033[0m\]"
+

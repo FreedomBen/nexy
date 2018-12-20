@@ -1,0 +1,9 @@
+dynamo:
+    image: freedomben/dynamodb
+    volumes:
+        - "./dynamo_data:/app/dynamo_data"
+
+app:
+    build: .
+    links:
+        - dynamo
