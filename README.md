@@ -5,9 +5,7 @@
 Currently Nexy has the following skills:
 
 1. Looking up words in the dictionary (Merriam-Webster.  Requires API key)
-1. Providing links to Blue Jeans conference rooms
 1. Translating Jira numbers to Jira ticket links
-1. Translating gerrit notation to gerrit links
 1. Conducting raffles
 
 ## How do I start up Nexy for development?
