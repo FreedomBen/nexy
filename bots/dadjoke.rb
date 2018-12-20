@@ -28,7 +28,7 @@ class DadjokeBot < SlackbotFrd::Bot
           channel: channel,
           message: get_joke,
           thread_ts: thread_ts,
-          username: 'Dad Joke Bot',
+          username: 'Dad Joke Bot (Nexy)',
           avatar_emoji: ':dadjokes:'
         )
       end
