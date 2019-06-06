@@ -8,7 +8,7 @@ require_relative '../lib/gerrit-jira-translator/data'
 
 class GerritJiraTranslator < SlackbotFrd::Bot
   def whitelisted_prefixes
-    'BOR|LOAN|SUP|PLAT|DT|PT|DK|DIS|SAND|PR|SPA|SUP'
+    'BOR|LOAN|SUP|PLAT|DT|PT|DK|DIS|SAND|PR|SPA|SUP|ME|NEX|BXD'
   end
 
   def add_callbacks(slack_connection)
@@ -313,9 +313,8 @@ class GerritJiraTranslator < SlackbotFrd::Bot
 
   def build_single_line_jira_str(jira, issue)
     return issue[:error] if issue[:error]
-    # Temporarily remove story points until we know where in the json it is
-    #":jira: :  #{priority_str(issue)}  #{story_points_str(issue)} #{jira_link(jira)} - #{summary_str(issue)}"
-    ":jira: :  #{priority_str(issue)}  #{jira_link(jira)} - #{summary_str(issue)}"
+    #":jira: :  #{priority_str(issue)}  #{story_points_str(issue)}#{jira_link(jira)}  -  (_#{status_str(issue)}_)  -  #{summary_str(issue)}"
+    ":jira: :  #{story_points_str(issue)}#{jira_link(jira)}   *#{assignee_str(issue)}*  -  (_#{status_str(issue)}_)  -  #{summary_str(issue)}"
   end
 
   def build_full_jira_str(jira, issue)
@@ -331,12 +330,30 @@ class GerritJiraTranslator < SlackbotFrd::Bot
     "          *Assigned to*:  #{assigned_to_str(issue)}"
   end
 
+  def status(issue)
+    # TODO add assigned to
+    issue[:fields] && issue[:fields][:status] && issue[:fields][:status][:name] && issue[:fields][:status][:name].to_s
+  end
+
   def story_points(issue)
-    issue['fields'] && issue['fields']['customfield_10004'] && issue['fields']['customfield_10004'].to_s
+    issue['fields'] && issue['fields']['customfield_10023'] && issue['fields']['customfield_10023'].to_s
+  end
+
+  def assignee_str(issue)
+    #issue['fields'] && issue['fields']['assignee'] && issue['fields']['assignee']['name'] && issue['fields']['assignee']['name'].to_s
+    assignee = issue['fields'] \
+            && issue['fields']['assignee'] \
+            && issue['fields']['assignee']['displayName'] \
+            && issue['fields']['assignee']['displayName'].to_s
+    (assignee.nil? || assignee.empty?) ? '(_Unassigned_)' : assignee
   end
 
   def story_points_str(issue)
-    story_points_to_emoji(story_points(issue)) || ''
+    story_points_to_emoji(story_points(issue))
+  end
+
+  def status_str(issue)
+    status(issue)
   end
 
   def priority_str(issue)
@@ -359,12 +376,23 @@ class GerritJiraTranslator < SlackbotFrd::Bot
 
   def story_points_to_emoji(points)
     {
-      '2.0' => ':2storypoints:',
-      '3.0' => ':3storypoints:',
-      '5.0' => ':5storypoints:',
-      '8.0' => ':8storypoints:',
-      '13.0' => ':13storypoints:'
-    }[points]
+      '1.0' => ':one:',
+      '2.0' => ':two:',
+      '3.0' => ':three:',
+      '4.0' => ':four:',
+      '5.0' => ':five:',
+      '6.0' => ':six:',
+      '7.0' => ':seven:',
+      '8.0' => ':eight:',
+      '9.0' => ':nine:',
+      '10.0' => ':keycap_ten:',
+      '11.0' => '11',
+      '12.0' => '12',
+      '13.0' => '13'
+    }[points] + '   '
+  rescue NoMethodError
+    return "*#{points}*" + '   ' if points
+    ''
   end
 
   def summary_str(issue)
@@ -512,6 +540,10 @@ class GerritJiraTranslator < SlackbotFrd::Bot
         message: message,
         parse: parse,
         thread_ts: thread_ts
+      )
+      sc.send_message(
+        channel: 'nexy-log',
+        message: "Sent to channel '#{channel}':  #{message}"
       )
     #end
   end
