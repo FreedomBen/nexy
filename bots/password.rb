@@ -50,7 +50,7 @@ class PasswordBot < SlackbotFrd::Bot
   end
 
   def password_msg
-    'Are you trying to share a password?  Please use https://privatebin.simplenex.us/ or Keybase.io for this.  More info:  https://simplenexus.atlassian.net/wiki/spaces/DEV/pages/954138834/Password+Sharing+at+SimpleNexus'
+    "Are you trying to share a password?\n\nIf so, please use one of these approved tools:\n- SN Private Bin: https://privatebin.simplenex.us/\n- Keybase.io\n\nMore info on Confluence:  https://simplenexus.atlassian.net/wiki/spaces/DEV/pages/954138834/Password+Sharing+at+SimpleNexus"
   end
 
   def add_callbacks(slack_connection)

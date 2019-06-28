@@ -5,7 +5,7 @@ require 'uri'
 
 class BitcoinBot < SlackbotFrd::Bot
   def endpoint
-    'https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,BCH,ETH,LTC,XMR,NXS,XZC,ZEC,XRP,IOT,ADA&tsyms=USD'
+    'https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,BCH,ETH,LTC,XMR,NXS,XZC,ZEC,XRP,ADA&tsyms=USD'
   end
 
 =begin
@@ -36,9 +36,6 @@ class BitcoinBot < SlackbotFrd::Bot
     },
     "XRP": {
       "USD": 0.231
-    },
-    "IOT": {
-      "USD": 4.15
     },
     "ADA": {
       "USD": 0.45
@@ -82,10 +79,6 @@ class BitcoinBot < SlackbotFrd::Bot
     json["XRP"]["USD"]
   end
 
-  def iot(json)
-    json["IOT"]["USD"]
-  end
-
   def ada(json)
     json["ADA"]["USD"]
   end
@@ -101,7 +94,6 @@ class BitcoinBot < SlackbotFrd::Bot
     retval.push('XZC') if has_xzc?(message)
     retval.push('ZEC') if has_zec?(message)
     retval.push('XRP') if has_xrp?(message)
-    retval.push('IOT') if has_iot?(message)
     retval.push('ADA') if has_ada?(message)
     retval
   end
@@ -151,10 +143,6 @@ class BitcoinBot < SlackbotFrd::Bot
     has_crypto_coin?(message) || message =~ /:xrp:|:ripple:/i
   end
 
-  def has_iot?(message)
-    has_crypto_coin?(message) || message =~ /:iota:/i
-  end
-
   def has_ada?(message)
     has_crypto_coin?(message) || message =~ /:ada:/i
   end
@@ -170,7 +158,6 @@ class BitcoinBot < SlackbotFrd::Bot
       has_xzc?(message),
       has_zec?(message),
       has_xrp?(message),
-      has_iot?(message),
       has_ada?(message)
     ].any?
   end
@@ -214,7 +201,6 @@ class BitcoinBot < SlackbotFrd::Bot
     return 'Nexus Bot' if has_nxs?(message)
     return 'Zcash Bot' if has_zec?(message)
     return 'Ripple Bot' if has_xrp?(message)
-    return 'Iota Bot' if has_iot?(message)
     return 'Ada Bot' if has_ada?(message)
     'Bitcoin Bot'
   end
@@ -230,7 +216,6 @@ class BitcoinBot < SlackbotFrd::Bot
     return ':nxs:' if has_nxs?(message)
     return ':zec:' if has_zec?(message)
     return ':xrp:' if has_xrp?(message)
-    return ':iota:' if has_iot?(message)
     return ':ada:' if has_ada?(message)
     ':btc:'
   end
