@@ -1,4 +1,4 @@
-FROM ruby:2.1
+FROM ruby:2.5
 
 # The locale must be UTF-8 for the json fixtures
 # to be interpreted correctly by ruby

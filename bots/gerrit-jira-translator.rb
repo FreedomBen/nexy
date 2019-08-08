@@ -8,13 +8,20 @@ require_relative '../lib/gerrit-jira-translator/data'
 
 class GerritJiraTranslator < SlackbotFrd::Bot
   def whitelisted_prefixes
-    'BOR|LOAN|SUP|PLAT|DT|PT|DK|DIS|SAND|PR|SPA|SUP|ME|NEX|BXD'
+    'BOR|LOAN|SUP|PLAT|DT|PT|DK|DIS|SAND|PR|SPA|SUP|ME|NEX|BXD|INFRA'
+  end
+
+  def blacklisted_channels
+    %w[
+      bps_test_graveyard
+      platform_team
+    ]
   end
 
   def add_callbacks(slack_connection)
     slack_connection.on_message do |user:, channel:, message:, timestamp:, thread_ts:|
       #if channel =~ /bps_test_graveyard/ && message && user != :bot && user != 'nexy' && timestamp != thread_ts
-      if message && user != :bot && user != 'nexy' && timestamp != thread_ts
+      if message && user != :bot && user != 'nexy' && !blacklisted_channels.include?(channel) && timestamp != thread_ts
         if contains_command(message)
           handle_command(slack_connection, user, channel, message, thread_ts)
         # gerrits are disabled.  see `def contains_gerrits`
