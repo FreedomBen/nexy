@@ -4,6 +4,9 @@ require 'uri'
 require 'twilio-ruby'
 
 class EmergencyBot < SlackbotFrd::Bot
+  PINPOINT_SMS_VOICE_REGION = 'us-west-2'
+  PINPOINT_ORIG_PHONE = '+17328120833'
+
   def destinations
     #  {
     #    ben: '+123456788',
@@ -13,7 +16,7 @@ class EmergencyBot < SlackbotFrd::Bot
   end
 
   def matches_channel?(channel)
-    %w[on-call on-call-testing].include?(channel)
+    %w[oncall on-call-testing].include?(channel)
   end
 
   def contains_trigger(message)
@@ -63,18 +66,33 @@ class EmergencyBot < SlackbotFrd::Bot
     send_sms_twilio(to: to, message: message)
   end
 
+  def make_phone_call_cli(to:, message:)
+    puts 'making call with the cli'
+    command = <<~EOF.gsub("\n", ' ')
+      aws pinpoint-sms-voice send-voice-message
+        --content '{"PlainTextMessage":{"LanguageCode":"en-US","Text":"#{message}"}}'
+        --destination-phone-number '#{to}'
+        --origination-phone-number '#{PINPOINT_ORIG_PHONE}'
+        --region #{PINPOINT_SMS_VOICE_REGION}
+    EOF
+    puts "Running command: #{command}"
+    `#{command}`
+  end
+
   def make_phone_call(to:, message:)
+    puts "Calling '#{to}'"
     resp = pinpointsmsvoice.send_voice_message({
       #caller_id: "Nexy (incident)",
-      caller_id: "Nexy",
+      #caller_id: "Nexy",
       #configuration_set_name: "WordCharactersWithDelimiters",
       content: {
         plain_text_message: {
-          language_code: "EN",
+          language_code: "en-US",
           text: message,
           #voice_id: "String",
         },
       },
+      origination_phone_number: PINPOINT_ORIG_PHONE,
       destination_phone_number: to,
       #origination_phone_number: "NonEmptyString",
     })
@@ -93,7 +111,7 @@ class EmergencyBot < SlackbotFrd::Bot
     case channel
     when 'on-call-testing'
       destinations.select{|k, v| k == 'bporter'}
-    when 'on-call'
+    when 'oncall'
       destinations
     else
       {}
@@ -121,13 +139,13 @@ class EmergencyBot < SlackbotFrd::Bot
 
           #results = destinations_for_channel(channel).reject{ |_, phone| phone.empty? }.map do |person, phone|
           results = destinations_for_channel(channel).map do |person, phone|
-            #make_phone_call(to: phone, message: msg)
+            make_phone_call_cli(to: phone, message: msg) if person == 'bporter'
             OpenStruct.new({ person: person, status: send_sms(to: phone, message: msg) })
           end
 
           slack_connection.send_message(
             channel: channel,
-            message: "*Sent SMS message* _'#{msg}'_:\n\n*Twilio status*:\n[#{twilio_results_to_str(results)}]\n\nPlease continue discussion of this incident in this thread.  For new incidents or to trigger another SMS, use the main channel.",
+            message: "*Sent SMS message* _'#{msg}'_:\n\n*Twilio status*:\n[#{twilio_results_to_str(results)}]\n\nPlease continue discussion of the incident in this thread.  For new incidents or to trigger another SMS, use the main channel.",
             thread_ts: timestamp, # start a thread
           )
         end

@@ -17,7 +17,7 @@ RUN bundle install
 
 # Install aescrypt for sourcing secrets
 RUN apt-get update                                                 \
- && apt-get install -y unzip vim                                   \
+ && apt-get install -y unzip vim awscli                            \
  && apt-get clean                                                  \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

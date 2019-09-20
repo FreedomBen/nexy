@@ -70,7 +70,8 @@ class PasswordBot < SlackbotFrd::Bot
           slack_connection.send_message(
             channel: channel,
             message: password_msg,
-            thread_ts: thread_ts
+            thread_ts: timestamp   # start a thread
+            #thread_ts: thread_ts
           )
           slack_connection.send_message(
             channel: 'nexy-log',

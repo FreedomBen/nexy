@@ -15,6 +15,9 @@ class GerritJiraTranslator < SlackbotFrd::Bot
     %w[
       bps_test_graveyard
       platform_team
+      nexus_team
+      lo-team
+      borrower-experience
     ]
   end
 
