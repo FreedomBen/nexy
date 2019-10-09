@@ -34,7 +34,7 @@ class CsmBot < SlackbotFrd::Bot
       "No CSMs or companies matched the term '#{search_term}'"
     else
       csms \
-        .map { |csm| "#{csm['company']}: #{csm['csm']}" } \
+        .map { |csm| "#{csm['company']} - #{csm['csm']}" } \
         .join("\n")
     end
   end
