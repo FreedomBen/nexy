@@ -778,7 +778,7 @@ GEM
     eventmachine (1.2.7)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
-    faye-websocket (0.10.9)
+    faye-websocket (0.11.0)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.5.1)
     file-append (0.0.1)
@@ -849,7 +849,7 @@ GEM
     unf_ext (0.0.8.2)
     webrick (1.7.0)
     webrobots (0.1.2)
-    websocket-driver (0.7.1)
+    websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
 
